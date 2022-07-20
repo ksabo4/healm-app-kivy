@@ -1,2 +1,2 @@
-# healm-app
-Heal'm App
+# Heal'M Mobile Application
+Heal'm phone App
