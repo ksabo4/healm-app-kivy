@@ -1,0 +1,76 @@
+BoxLayoutExample:
+
+#BoxLayoutExample
+<BoxLayoutExample>:
+
+    #the main orientation of the layout
+    orientation: "horizontal" #changing orientation will affect the buttons
+
+    Button:
+        text:"A"
+        size_hint: 0.5,None
+        pos_hint: {'center_y': 0.5}
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: "10dp"
+        Button:
+            text:"B1"
+        Button:
+            text:"B2"
+        Button:
+            text:"B3"
+
+    BoxLayout:
+        orientation:"vertical"
+
+        Label:
+            text:"label1"
+
+        Label:
+            text:"label2"
+
+
+#MainWidget 
+<MainWidget>:
+    Button:
+        text: "Hello"
+        size: "40dp", "40dp"
+        pos: "100dp", "200dp"
+
+    Button:
+        text: "Hello2"
+        size: "40dp" , "40dp"
+        pos: "200dp", "300dp"
+
+    Label:
+        text: "label!"
+        size: "40dp", "40dp"
+        pos:"300dp","400dp"
+        color: 1,0,0,1
+
+
+#NOTES:
+#Button:
+        #text: "A"
+
+        #1st setting:
+        #we use the size hint to make sure that the width and height is proportion to the screen
+        #size_hint: 0.8, 0.5 #proportion of button is 80% width and 50% height
+
+        #2nd setting:
+        #size_hint: 1, None #the height is 1 only but the height is None(means that the height is nothing in perspective)
+        #height:"60dp" #now the height is fixed
+
+        #3rd setting
+        #size_hint: 0.5, 0.5 #so, the height is fixed to 0.5 proportion but no fixed width
+
+        #to move position, you need to use these:
+        #pos_hint : {}
+        #where inside the brackets could be:
+            #x, center_x, right for the horizontal
+            #y, center_y, top for the vertical
+
+        #pos_hint: {"x": 0.5} #changing the most left of the button relative horizontal position to the 0.5
+        #pos_hint: {"y" : 0.5} #???
+
