@@ -16,6 +16,10 @@ class WidgetsExample(GridLayout):
 
     my_text = StringProperty("Hello!")
 
+    slider_on = BooleanProperty(False)
+
+
+
     def on_button_click(self):
         if self.counter_on == True:
             self.count = self.count + 1
@@ -28,16 +32,23 @@ class WidgetsExample(GridLayout):
         if widget.state == "normal" :
             widget.text = "OFF"
             self.counter_on = False
-
         else:
             widget.text = "ON"
             self.counter_on = True
 
+
     def on_switch_active(self, widget):
-        print("Switch: " + str(widget.active)) #passing in the
+        print("Switch state: " + str(widget.active))
+        if widget.active == "True":
+            self.slider_on = True
+        else:
+            self.slider_on = False
 
     def on_slider_value(self,widget):
-        print("Slider: " + str(int(widget.value)))
+        self.slider_value_txt = str(int(widget.value))
+
+
+
 
 
 

@@ -3,7 +3,8 @@ WidgetsExample: #you can change the different interfaces when you type this
 
 <WidgetsExample>:
     cols: 3
-
+    #first row would be the ToggleButton, Button and label
+    #second row would be the switch, slider and the boy layout
 
 
     #this toggle button actually has a state: down (when it is pressed) and normal (when it is back again)
@@ -15,11 +16,10 @@ WidgetsExample: #you can change the different interfaces when you type this
 
     Button:
         text: "Counter Click"
-        on_press : root.on_button_click()
+        on_press : root.on_button_click() #handling event of a button click
 
         #the "not" syntax is doing the opposite of what root.counter_on is passing/doing
         disabled: not root.counter_on #this would disable the button, not allowing it to press
-
 
     Label:
         text: root.my_text
@@ -27,10 +27,14 @@ WidgetsExample: #you can change the different interfaces when you type this
         color: 1,0.5 , 1, 1
 
     Switch:
-        on_active: root.on_switch_active(self)
+
+        id:my_switch
         size_hint: None, 1 #width , height
         width: "100dp" # we need this because if we set it to 100dp, the switch will not interfere with the counter click
+        active: True #by default, the switch is turned on/ is active and the user can change it later
+
     Slider:
+        id: my_slider #this ID's purpose is to make sure other widgets can use it's values
 
         #setting up values for the switch
         min: 0
@@ -38,8 +42,21 @@ WidgetsExample: #you can change the different interfaces when you type this
         value: 50
 
         orientation: "vertical" #the vertial orientation would be the slider orientation
-
         on_value: root.on_slider_value(self)
+        disabled: not my_switch.active #the my_switch is the ID (from the Switch!). The active state means if it is active or not
+
+
+
+    #Making a progress bar where the
+    BoxLayout:
+        orientation: "vertical" #you would need to change the orientation for the positioning of things!
+        Label:
+            text: str(int(my_slider.value)) #inheriting with the id slider, you can take its properties and take its value
+        ProgressBar:
+            max:100
+            value: my_slider.value
+
+
 
 <PageLayoutExample@PageLayout>:
     #page layout gives use to scroll horizontally
@@ -51,18 +68,21 @@ WidgetsExample: #you can change the different interfaces when you type this
     GridLayoutExample:
 
 
-
 <ScrollViewExample@ScrollView>:
     StackLayoutExample:
         size_hint: 1 , None #horizontal is 1 and vertical is none
         height: self.minimum_height #this makes the scrollview to scroll it just enough for making it possible to see the contents!
     #scroll view can only take 1 child!
 
+
+
 <StackLayoutExample>:
     # left-right, top-bottom
     # orientation : "rl-tb" #right to left , top to bottom
     # padding: ("20dp", "20dp", "20dp","20dp")
     # spacing: "20dp", "20dp" #horizontally, vertically are 20dp
+
+
 
 <GridLayoutExample@GridLayout>:
     #this layout needs 2 things: rows and collumns
