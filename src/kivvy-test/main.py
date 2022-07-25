@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.metrics import dp
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, BooleanProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -12,21 +12,32 @@ from kivy.uix.button import Button
 class WidgetsExample(GridLayout):
     count = 0
 
+    counter_on = BooleanProperty(False)#this variable would be if the counter_on is true, you can increment!
+
     my_text = StringProperty("Hello!")
 
     def on_button_click(self):
-        self.count = self.count + 1
+        if self.counter_on == True:
+            self.count = self.count + 1
 
-        #remember the str() function to convert to string
-        self.my_text = "You clicked : " + str(self.count)+ " times!" #changing the text once the button is clicked
+            #remember the str() function to convert to string
+            self.my_text = "You clicked : " + str(self.count)+ " times!" #changing the text once the button is clicked
 
     def on_toggle_button_state(self, widget):
         print("toggle state" + widget.state)
         if widget.state == "normal" :
             widget.text = "OFF"
+            self.counter_on = False
+
         else:
             widget.text = "ON"
+            self.counter_on = True
 
+    def on_switch_active(self, widget):
+        print("Switch: " + str(widget.active)) #passing in the
+
+    def on_slider_value(self,widget):
+        print("Slider: " + str(int(widget.value)))
 
 
 

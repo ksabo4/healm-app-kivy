@@ -4,6 +4,8 @@ WidgetsExample: #you can change the different interfaces when you type this
 <WidgetsExample>:
     cols: 3
 
+
+
     #this toggle button actually has a state: down (when it is pressed) and normal (when it is back again)
     ToggleButton:
         text:"OFF"
@@ -15,10 +17,29 @@ WidgetsExample: #you can change the different interfaces when you type this
         text: "Counter Click"
         on_press : root.on_button_click()
 
+        #the "not" syntax is doing the opposite of what root.counter_on is passing/doing
+        disabled: not root.counter_on #this would disable the button, not allowing it to press
+
+
     Label:
         text: root.my_text
         # font_size: "80dp" #edit font size
         color: 1,0.5 , 1, 1
+
+    Switch:
+        on_active: root.on_switch_active(self)
+        size_hint: None, 1 #width , height
+        width: "100dp" # we need this because if we set it to 100dp, the switch will not interfere with the counter click
+    Slider:
+
+        #setting up values for the switch
+        min: 0
+        max: 100
+        value: 50
+
+        orientation: "vertical" #the vertial orientation would be the slider orientation
+
+        on_value: root.on_slider_value(self)
 
 <PageLayoutExample@PageLayout>:
     #page layout gives use to scroll horizontally
