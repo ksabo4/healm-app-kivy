@@ -56,6 +56,19 @@ WidgetsExample: #you can change the different interfaces when you type this
             max:100
             value: my_slider.value
 
+    TextInput:
+        id: my_text_input
+        text: "Input from user!"
+        size_hint:None, 1 #width is not defined
+        multiline: False #this will set the "enter" key to be the trigger to put in the label
+        on_text_validate: root.on_text_validate(self) #again, passing the self widget property since it will change
+
+
+
+    Label:
+        #this label would have the user input output when there is an input in the TextInput!
+        text: root.text_input_from_user
+
 
 
 <PageLayoutExample@PageLayout>:
@@ -206,4 +219,5 @@ WidgetsExample: #you can change the different interfaces when you type this
 
         #pos_hint: {"x": 0.5} #changing the most left of the button relative horizontal position to the 0.5
         #pos_hint: {"y" : 0.5} #???
+#size_hint: x,y #width, height
 
