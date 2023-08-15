@@ -6,6 +6,7 @@ import auth as googleauth
 import requests
 import pyrebase
 # import firebase
+from datetime import date, timedelta
 from kivyauth.google_auth import initialize_google, login_google, logout_google
 import firebase_admin
 from firebase_admin import credentials, initialize_app, auth, db
@@ -307,7 +308,8 @@ ScreenManager:
     BoxLayout:
         orientation: 'vertical'
         id: graph_container
-        # size_hint_y: .3
+        size_hint_y: .3
+        #padding: 1.5
         # height: "20"
     MDLabel:
         id: woundstatus
@@ -560,6 +562,7 @@ class CloudScreen(Screen):
         if exists:"""
         #DemoApp.bandages.append(connect_to.address)
         DemoApp.bandages[connect_to.address] = -1
+        DemoApp.bandages_prev_data[connect_to.address] = [0,0,0,0,0,0,0]
         bandage_ref = db.reference(f"users/{DemoApp.uid}/bandages/{connect_to.address}")
 
         uuid_battery_service = '0000180f-0000-1000-8000-00805f9b34fb'
@@ -583,6 +586,7 @@ class CloudScreen(Screen):
                                      "uic acid": "1"})
                     print(bluetooth_value)
                     DemoApp.bandages[connect_to.address] = bluetooth_value
+                    DemoApp.bandages_prev_data[connect_to.address][6] = bluetooth_value
                     DemoApp.set_bandage_buttons(self)
                     #print(int.from_bytes(battery_level, byteorder='little'))
                     #print(battery_level.decode())
@@ -624,22 +628,28 @@ class PhoneNumScreen2(Screen):
 
 class MainBandageScreen(Screen):
     def generate_bar_graph(self):
-        x = ["7/09/23", "7/10/23", "7/11/23", "7/12/23", "7/13/23", "7/14/23", "7/15/23"]
-        y = [0, 5, 10, 15, 20, 25, 30]
+        screen = DemoApp.screen_manager.get_screen('mainbandage')
+        today = date.today()
+        x = [today - timedelta(days=6), today - timedelta(days=5), today - timedelta(days=4),
+             today - timedelta(days=3), today - timedelta(days=2), today - timedelta(days=1), today]
+        x = [dt.strftime('%b %d') for dt in x]
+        #x = ["7/09/23", "7/10/23", "7/11/23", "7/12/23", "7/13/23", "7/14/23", "7/15/23"]
+        #y = [0, 5, 10, 15, 20, 25, 30]
+        #if DemoApp.cur_bandage != None:
+        y = list(map(float, DemoApp.bandages_prev_data[DemoApp.cur_bandage]))#[0, 5, 10, 15, 20, 25, 30]
 
         fig, ax = plt.subplots()
-        ax.bar(x, y)
+        #plt.plot_date(x,y,xdate=True)
+        ax.plot(x, y)
 
-        # plt.ylabel("Level")
-        # plt.xlabel("Days")
+        plot_widget = FigureCanvasKivyAgg(fig, size_hint_y=0.8)
 
-        plot_widget = FigureCanvasKivyAgg(fig)
+        screen.ids.graph_container.clear_widgets()
+        screen.ids.graph_container.add_widget(plot_widget)
+        graph_container = screen.ids.graph_container
+        #graph_container.size_hint_y = None  # Disable height size_hint
 
-        self.ids.graph_container.clear_widgets()
-        self.ids.graph_container.add_widget(plot_widget)
-        graph_container = self.ids.graph_container
-        graph_container.size_hint_y = None  # Disable height size_hint
-        graph_container.height = "150dp"  # Set a fixed height (you can adjust the value as needed)
+        #graph_container.height = "150dp"  # Set a fixed height (you can adjust the value as needed)
         graph_container.pos_hint = {"center_x": 0.5, "center_y": 0.5}  # Center the container
 
 
@@ -677,6 +687,7 @@ def load_bandage_info(bandage, screen, btn):
             screen.ids.woundstatus.text = "Go see a doctor"
             screen.ids.woundstatus.text_color = (255 / 255, 216 / 255, 0, 1)
     DemoApp.cur_bandage = bandage
+    DemoApp.screen_manager.get_screen('mainbandage').generate_bar_graph()
     screen.manager.current = 'mainbandage'
 
 
@@ -710,6 +721,7 @@ class DemoApp(MDApp):
     firebase_admin.initialize_app(cred, {'databaseURL': "https://healm-2-login-default-rtdb.firebaseio.com/"})
     ref = db.reference("/")
     bandages = {}
+    bandages_prev_data = {}
     cur_bandage = None
     screen_manager = None
 
@@ -741,6 +753,11 @@ class DemoApp(MDApp):
                         print("")"""
                     bluetooth_value = str(await client.read_gatt_char(uuid_uart_service), "utf-8")
                     DemoApp.bandages[bandage] = bluetooth_value
+                    i = 0
+                    while i < 6:
+                        DemoApp.bandages_prev_data[bandage][i] = DemoApp.bandages_prev_data[bandage][i+1]
+                        i += 1
+                    DemoApp.bandages_prev_data[bandage][6] = bluetooth_value
                     if DemoApp.cur_bandage == bandage:
                         #DemoApp.screen_manager.get_screen("mainbandage").ids.pH.text = bluetooth_value
                         Clock.schedule_once(lambda dt: self.update_pH(bluetooth_value), 0)
@@ -763,6 +780,7 @@ class DemoApp(MDApp):
     def update_pH(self, bluetooth_pH):
         print(f"updating ph to {bluetooth_pH}")
         DemoApp.screen_manager.get_screen("mainbandage").ids.pH.text = f"pH Level: {bluetooth_pH}"
+        MainBandageScreen.generate_bar_graph(self)
 
     async def kivyCoro(self):
         await self.async_run(async_lib='asyncio')
@@ -803,7 +821,7 @@ class DemoApp(MDApp):
     # what happens when press one of the bandage icons
     def pressed(self, *args):
         self.root.get_screen('menu').manager.current = 'mainbandage'
-        self.root.get_screen('mainbandage').generate_bar_graph()
+        #self.root.get_screen('mainbandage').generate_bar_graph()
 
     # creating the bandage icons
     def on_start(self):
@@ -1039,11 +1057,12 @@ class DemoApp(MDApp):
                 print(bandage)
                 #DemoApp.bandages.append(bandage)
                 DemoApp.bandages[bandage] = -1
+                DemoApp.bandages_prev_data[bandage] = [0,0,0,0,0,0,0]
                 button = MDRoundFlatIconButton(text=str(i), icon='bandage', size_hint=(1, 4), id=bandage,
                                                on_press=partial(load_bandage_info, bandage,
                                                                 DemoApp.screen_manager.get_screen('mainbandage')))
                 DemoApp.screen_manager.get_screen('menu').ids.container1.add_widget(button)
-                DemoApp.screen_manager.get_screen('mainbandage').generate_bar_graph()
+
                 i += 1
 
     def login_callback(self, email, password):
