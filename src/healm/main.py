@@ -2,7 +2,7 @@
 # import jnius as jnius
 import platform
 
-import auth as googleauth
+#import auth as googleauth
 import requests
 import pyrebase
 # import firebase
@@ -10,7 +10,7 @@ from datetime import date, timedelta
 from kivyauth.google_auth import initialize_google, login_google, logout_google
 import firebase_admin
 from firebase_admin import credentials, initialize_app, auth, db
-from firebase import firebase
+#from firebase import firebase
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -35,7 +35,7 @@ from kivy.utils import platform
 import webbrowser
 from plyer import call
 
-import bluetooth
+#import bluetooth
 import asyncio
 import bleak
 import json
@@ -729,9 +729,6 @@ class DemoApp(MDApp):
         # self.theme_cls.primary_palette = 'LightBlue'
         # self.theme_cls.accent_palette = 'Blue'
         # trying to add the google log in stuff
-        client_id = open("client_id.txt")
-        client_secret = open("client_secret.txt")
-        initialize_google(self.after_login, self.error_listener, client_id.read(), client_secret.read())
 
         screen = Builder.load_string(screen_helper)
         #Clock.schedule_interval(self.read_data_loop_sync, 10)
